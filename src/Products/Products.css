@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-areas: "a a a";
+  gap: 10px;
+  grid-auto-columns: 1fr;
+  border-radius: 1%;
+  width: 70vw;
+  padding: 20px;
+}
