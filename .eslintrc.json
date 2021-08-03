@@ -1,22 +1,15 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 12,
-        "sourceType": "module"
-    },
-    "plugins": ["react"],
-    "rules": {
-        "react/prop-types": "off",
-        "no-unused-vars": "off",
-        "indent": ["error", 4],
-        "quotes": ["error", "double"],
-        "semi": ["error", "always"]
-    }
+	"extends": ["react-app"],
+	"plugins": ["prettier"],
+	"rules": {
+		"prettier/prettier": [
+			"error",
+			{
+				"endOfLine": "auto"
+			}
+		],
+		"react/prop-types": "off",
+		"quotes": ["error", "double"],
+		"semi": ["error", "always"]
+	}
 }

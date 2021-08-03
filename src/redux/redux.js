@@ -6,10 +6,10 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query";
 const defaultState = {};
 
 export const store = configureStore({
-    reducer: reducers,
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(shopApi.middleware),
-    defaultState,
+  reducer: reducers,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(shopApi.middleware),
+  defaultState,
 });
 
 setupListeners(store.dispatch);
