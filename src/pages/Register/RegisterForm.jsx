@@ -1,12 +1,14 @@
 import { Button, CssBaseline, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { setCredentials } from "../../redux/auth/authSlice";
-import { useLoginMutation } from "../../services/computerShopService";
+
+import { setNotification } from "../../redux/notification/notificationSlice";
+import { useRegisterMutation } from "../../services/computerShopService";
 import history from "../../utils/history";
-import "./Login.css";
+import "./Register.css";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -27,44 +29,56 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LoginForm = ({ handleOpen, handleClose }) => {
+const RegisterForm = () => {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  const [input, setInput] = useState({ username: "", password: "" });
+  const [input, setInput] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   const classes = useStyles();
-  const [login, { isLoading }] = useLoginMutation();
+  const [register, { isLoading }] = useRegisterMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userResponse = await login(input).unwrap();
-      console.log(userResponse);
-      window.localStorage.setItem("userToken", userResponse.token);
-      window.localStorage.setItem("userExpiration", userResponse.expiration);
-      window.localStorage.setItem(
-        "userRoles",
-        JSON.stringify(userResponse.roles)
-      );
-      window.localStorage.setItem("userIsLoggedIn", JSON.stringify(true));
+      const userResponse = await register(input).unwrap();
       dispatch(
-        setCredentials({
-          token: userResponse.token,
-          expiration: userResponse.expiration,
-          roles: userResponse.roles,
-          isLoggedIn: true,
+        setNotification({
+          alertMessage: userResponse.message,
+          alertType: "success",
+          open: true,
         })
       );
-      handleOpen("Successfully logged in!", "success");
-      history.push("/products");
+      history.push("/login");
     } catch (error) {
-      console.log(error);
+      if (error.status === 400) {
+        dispatch(
+          setNotification({
+            alertMessage: "Please fill out all the forms properly.",
+            alertType: "error",
+            open: true,
+          })
+        );
+        return;
+      }
       error.data
-        ? handleOpen("Invalid username or password. Please try again.", "error")
-        : handleOpen(
-            "There was an issue contacting the server. Please try again later.",
-            "error"
+        ? dispatch(
+            setNotification({
+              alertMessage: error.data.message,
+              alertType: "error",
+              open: true,
+            })
+          )
+        : dispatch(
+            setNotification({
+              alertMessage: error.message,
+              alertType: "error",
+              open: true,
+            })
           );
     }
   };
@@ -88,7 +102,7 @@ const LoginForm = ({ handleOpen, handleClose }) => {
       ) : (
         <div>
           <Typography component="h1" variant="h4" color="textPrimary">
-            Sign in to continue
+            Register
           </Typography>
           <form className={classes.form} onSubmit={(e) => handleSubmit(e)}>
             <TextField
@@ -102,6 +116,18 @@ const LoginForm = ({ handleOpen, handleClose }) => {
               autoComplete="username"
               autoFocus
               value={input.username}
+              onChange={(e) => handleChange(e)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
+              value={input.email}
               onChange={(e) => handleChange(e)}
             />
             <TextField
@@ -125,7 +151,7 @@ const LoginForm = ({ handleOpen, handleClose }) => {
               className={classes.submit}
               disabled={isLoading}
             >
-              Sign In
+              Register
             </Button>
           </form>
         </div>
@@ -134,4 +160,4 @@ const LoginForm = ({ handleOpen, handleClose }) => {
   );
 };
 
-export default withRouter(LoginForm);
+export default withRouter(RegisterForm);

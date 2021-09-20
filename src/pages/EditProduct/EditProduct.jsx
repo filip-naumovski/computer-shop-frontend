@@ -2,6 +2,7 @@ import "./EditProduct.css";
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
+import { setNotification } from "../../redux/notification/notificationSlice";
 import { useGetProductQuery } from "../../services/computerShopService";
 import { useUpdateProductMutation } from "../../services/computerShopService";
 
@@ -9,6 +10,7 @@ import { Button, CssBaseline, TextField, Typography } from "@material-ui/core";
 import { Box } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 import { makeStyles } from "@material-ui/styles";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 const EditProduct = ({ handleOpen, handleClose }) => {
   const { id } = useParams();
 
+  const dispatch = useDispatch();
   const {
     data: product,
     isLoading: productIsLoading,
@@ -87,18 +90,32 @@ const EditProduct = ({ handleOpen, handleClose }) => {
         id: id,
         product: input,
       }).unwrap();
-      handleOpen("Successfully updated product!", "success");
+      dispatch(
+        setNotification({
+          alertMessage: "Successfully updated product!",
+          alertType: "success",
+          open: true,
+        })
+      );
       history.push("/products");
     } catch (error) {
       console.log(error);
       error.data
-        ? handleOpen(
-            "There was an error updating the product. Please try again.",
-            "error"
+        ? dispatch(
+            setNotification({
+              alertMessage:
+                "There was an error updating the product. Please try again.",
+              alertType: "error",
+              open: true,
+            })
           )
-        : handleOpen(
-            "There was an issue contacting the server. Please try again later.",
-            "error"
+        : dispatch(
+            setNotification({
+              alertMessage:
+                "There was an issue contacting the server. Please try again later.",
+              alertType: "error",
+              open: true,
+            })
           );
     }
   };

@@ -4,12 +4,12 @@ import React from "react";
 import "./Login.css";
 import LoginForm from "./LoginForm";
 
-const Login = ({ handleOpen, handleClose }) => {
+const Login = () => {
   const theme = useTheme();
   return (
     <Box className="container">
       <Box className="user-form" bgcolor={theme.palette.secondary.main}>
-        <LoginForm handleOpen={handleOpen} handleClose={handleClose} />
+        <LoginForm />
       </Box>
     </Box>
   );

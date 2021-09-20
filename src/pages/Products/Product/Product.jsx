@@ -11,6 +11,8 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
+import { useDispatch } from "react-redux";
+import { setNotification } from "redux/notification/notificationSlice";
 import { useDeleteProductMutation } from "services/computerShopService";
 
 const useStyles = makeStyles({
@@ -29,33 +31,53 @@ const useStyles = makeStyles({
   },
 });
 
-const Product = ({ product, handleOpen, handleClose, refreshProducts }) => {
+const Product = ({ product, refreshProducts }) => {
   const [deleteButtonsShown, setDeleteButtonsShown] = useState(false);
 
   const state = useSelector((state) => state);
+  const dispatch = useDispatch();
   const [deleteProduct, { isLoading }] = useDeleteProductMutation();
 
   const classes = useStyles();
   const handleDelete = async () => {
     try {
       const deleteResponse = await deleteProduct(product.id).unwrap();
-      handleOpen(
-        `Successfully deleted product with id ${deleteResponse.id}`,
-        "success"
+      dispatch(
+        setNotification({
+          alertMessage: `Successfully deleted product with id ${deleteResponse.id}!`,
+          alertType: "success",
+          open: true,
+        })
       );
       setDeleteButtonsShown(false);
       refreshProducts();
     } catch (error) {
       console.log(error);
       if (error.status === 404) {
-        handleOpen("Product not found.", "error");
+        dispatch(
+          setNotification({
+            alertMessage: "Product not found.",
+            alertType: "error",
+            open: true,
+          })
+        );
         return;
       }
       error.data
-        ? handleOpen(error.data.message, "error")
-        : handleOpen(
-            "There was an issue contacting the server. Please try again later.",
-            "error"
+        ? dispatch(
+            setNotification({
+              alertMessage: error.data.message,
+              alertType: "error",
+              open: true,
+            })
+          )
+        : dispatch(
+            setNotification({
+              alertMessage:
+                "There was an issue contacting the server. Please try again later.",
+              alertType: "error",
+              open: true,
+            })
           );
     }
   };

@@ -1,11 +1,13 @@
 import { Button, CssBaseline, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { useRegisterMutation } from "../../services/computerShopService";
+import { setCredentials } from "../../redux/auth/authSlice";
+import { setNotification } from "../../redux/notification/notificationSlice";
+import { useLoginMutation } from "../../services/computerShopService";
 import history from "../../utils/history";
-import "./Register.css";
+import "./Login.css";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -26,32 +28,61 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RegisterForm = ({ handleOpen, handleClose }) => {
+const LoginForm = () => {
   const state = useSelector((state) => state);
+  const dispatch = useDispatch();
 
-  const [input, setInput] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [input, setInput] = useState({ username: "", password: "" });
 
   const classes = useStyles();
-  const [register, { isLoading }] = useRegisterMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userResponse = await register(input).unwrap();
-      handleOpen(userResponse.message, "success");
-      history.push("/login");
+      const userResponse = await login(input).unwrap();
+      console.log(userResponse);
+      window.localStorage.setItem("userToken", userResponse.token);
+      window.localStorage.setItem("userExpiration", userResponse.expiration);
+      window.localStorage.setItem(
+        "userRoles",
+        JSON.stringify(userResponse.roles)
+      );
+      window.localStorage.setItem("userIsLoggedIn", JSON.stringify(true));
+      dispatch(
+        setCredentials({
+          token: userResponse.token,
+          expiration: userResponse.expiration,
+          roles: userResponse.roles,
+          isLoggedIn: true,
+        })
+      );
+      dispatch(
+        setNotification({
+          alertMessage: "Successfully logged in",
+          alertType: "success",
+          open: true,
+        })
+      );
+      history.push("/products");
     } catch (error) {
-      if (error.status === 400) {
-        handleOpen("Please fill out all the forms properly.", "error");
-        return;
-      }
+      console.log(error);
       error.data
-        ? handleOpen(error.data.message, "error")
-        : handleOpen(error.message, "error");
+        ? dispatch(
+            setNotification({
+              alertMessage: "Invalid username or password. Please try again.",
+              alertType: "error",
+              open: true,
+            })
+          )
+        : dispatch(
+            setNotification({
+              alertMessage:
+                "There was an issue contacting the server. Please try again later.",
+              alertType: "error",
+              open: true,
+            })
+          );
     }
   };
 
@@ -74,7 +105,7 @@ const RegisterForm = ({ handleOpen, handleClose }) => {
       ) : (
         <div>
           <Typography component="h1" variant="h4" color="textPrimary">
-            Register
+            Sign in to continue
           </Typography>
           <form className={classes.form} onSubmit={(e) => handleSubmit(e)}>
             <TextField
@@ -88,18 +119,6 @@ const RegisterForm = ({ handleOpen, handleClose }) => {
               autoComplete="username"
               autoFocus
               value={input.username}
-              onChange={(e) => handleChange(e)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              autoComplete="email"
-              value={input.email}
               onChange={(e) => handleChange(e)}
             />
             <TextField
@@ -123,7 +142,7 @@ const RegisterForm = ({ handleOpen, handleClose }) => {
               className={classes.submit}
               disabled={isLoading}
             >
-              Register
+              Sign In
             </Button>
           </form>
         </div>
@@ -132,4 +151,4 @@ const RegisterForm = ({ handleOpen, handleClose }) => {
   );
 };
 
-export default withRouter(RegisterForm);
+export default withRouter(LoginForm);

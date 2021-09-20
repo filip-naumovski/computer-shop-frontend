@@ -4,12 +4,12 @@ import React from "react";
 import "./Register.css";
 import RegisterForm from "./RegisterForm";
 
-const Register = ({ handleOpen, handleClose }) => {
+const Register = () => {
   const theme = useTheme();
   return (
     <Box className="container">
       <Box className="user-form" bgcolor={theme.palette.secondary.main}>
-        <RegisterForm handleOpen={handleOpen} handleClose={handleClose} />
+        <RegisterForm />
       </Box>
     </Box>
   );

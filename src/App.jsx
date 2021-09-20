@@ -14,9 +14,11 @@ import Login from "./pages/Login/Login";
 import Nav from "./Nav";
 import Products from "./pages/Products/Products";
 import { setCredentials } from "./redux/auth/authSlice";
+import { setNotification } from "./redux/notification/notificationSlice";
 import Register from "./pages/Register/Register";
 import history from "./utils/history";
 import EditProduct from "pages/EditProduct/EditProduct";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,23 +36,13 @@ const App = () => {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const darkModeHandler = () => {
     setDarkMode(!darkMode);
   };
 
-  const [open, setOpen] = useState(false);
-  const [alertType, setAlertType] = useState("success");
-  const [alertMessage, setAlertMessage] = useState("Successfully logged in!");
-
-  const handleOpen = (msg, type) => {
-    setAlertMessage(msg);
-    setAlertType(type);
-    setOpen(true);
-  };
-
   const handleClose = () => {
-    setOpen(false);
+    dispatch(setNotification({ open: false }));
   };
 
   useEffect(() => {
@@ -73,7 +65,7 @@ const App = () => {
             isLoggedIn: false,
           })
         );
-  }, []);
+  }, [dispatch]);
 
   const logoutHandler = () => {
     console.log("logged out");
@@ -121,32 +113,32 @@ const App = () => {
         />
         <div style={{ marginTop: "50px", marginBottom: "50px" }}>
           <RouterSwitch>
-            <Route exact path="/products">
-              <Products handleOpen={handleOpen} handleClose={handleClose} />
-            </Route>
-            <Route exact path="/products/:id">
-              <EditProduct handleOpen={handleOpen} handleClose={handleClose} />
-            </Route>
+            <ProtectedRoute exact path="/products" component={Products} />
+            <ProtectedRoute
+              exact
+              path="/products/:id"
+              component={EditProduct}
+            />
             <Route exact path="/login">
-              <Login handleOpen={handleOpen} handleClose={handleClose} />
+              <Login />
             </Route>
             <Route exact path="/register">
-              <Register handleOpen={handleOpen} handleClose={handleClose} />
+              <Register />
             </Route>
           </RouterSwitch>
         </div>
       </Router>
       <Snackbar
-        open={open}
+        open={state.notification.open}
         autoHideDuration={6000}
         onClose={() => handleClose()}
       >
         <Alert
-          severity={alertType}
+          severity={state.notification.alertType}
           variant="filled"
           onClose={() => handleClose()}
         >
-          {alertMessage}
+          {state.notification.alertMessage}
         </Alert>
       </Snackbar>
     </ThemeProvider>

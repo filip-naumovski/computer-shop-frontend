@@ -16,7 +16,7 @@ const Nav = ({ darkMode, classes, setDarkMode, state, logout }) => {
     <div>
       <AppBar position="sticky">
         <Toolbar>
-          <Switch checked={darkMode} onChange={setDarkMode} />
+          {/* <Switch checked={darkMode} onChange={setDarkMode} /> TODO: Remove? */}
           <Typography variant="h5" className={classes.title}>
             {newString}
           </Typography>
