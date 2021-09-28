@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.formContainer {
+  display: flex;
+  align-items: flex-start;
+  padding: 30px;
+  border-radius: 1%;
+  width: 70vw;
+}

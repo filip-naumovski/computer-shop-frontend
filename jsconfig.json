@@ -1,6 +1,8 @@
 {
-    "compilerOptions": {
-      "baseUrl": "./src",
-      "jsx": "react"
-    }
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2016",
+    "baseUrl": "./src",
+    "jsx": "preserve"
   }
+}

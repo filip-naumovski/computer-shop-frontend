@@ -19,6 +19,12 @@ export const shopApi = createApi({
     getProduct: builder.query({
       query: (id) => `products/${id}`,
     }),
+    getUserCart: builder.query({
+      query: () => "carts",
+    }),
+    getOrders: builder.query({
+      query: () => "orders",
+    }),
     deleteProduct: builder.mutation({
       query: (id) => ({
         url: `products/${id}`,
@@ -36,6 +42,44 @@ export const shopApi = createApi({
           "Content-Type": "application/json",
         },
         body: { ...product },
+      }),
+    }),
+    addProduct: builder.mutation({
+      query: (product) => ({
+        url: "products",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: { ...product, price: parseInt(product.price) },
+      }),
+    }),
+    addProductToCart: builder.mutation({
+      query: (product) => ({
+        url: "carts",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: { ...product, price: parseInt(product.price) },
+      }),
+    }),
+    submitOrder: builder.mutation({
+      query: () => ({
+        url: "orders",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+    confirmOrder: builder.mutation({
+      query: (id) => ({
+        url: `orders/${id}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }),
     }),
 
@@ -65,8 +109,14 @@ export const shopApi = createApi({
 export const {
   useGetProductsQuery,
   useGetProductQuery,
+  useGetUserCartQuery,
+  useGetOrdersQuery,
   useDeleteProductMutation,
   useUpdateProductMutation,
+  useAddProductMutation,
+  useAddProductToCartMutation,
+  useSubmitOrderMutation,
+  useConfirmOrderMutation,
   useLoginMutation,
   useRegisterMutation,
 } = shopApi;

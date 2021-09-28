@@ -1,6 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router";
+import { Link } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -13,14 +15,18 @@ import Typography from "@material-ui/core/Typography";
 
 import { useDispatch } from "react-redux";
 import { setNotification } from "redux/notification/notificationSlice";
-import { useDeleteProductMutation } from "services/computerShopService";
+import {
+  useAddProductToCartMutation,
+  useDeleteProductMutation,
+} from "services/computerShopService";
 
 const useStyles = makeStyles({
   root: {
     width: "20vw",
-    height: "430px",
+    height: "40vh",
     display: "flex",
     flexDirection: "column",
+    boxShadow: "10px 10px 18px -9px rgba(0,0,0,0.75)",
   },
   media: {
     height: 140,
@@ -37,6 +43,9 @@ const Product = ({ product, refreshProducts }) => {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
   const [deleteProduct, { isLoading }] = useDeleteProductMutation();
+  const [addProduct, { AddIsLoading }] = useAddProductToCartMutation();
+
+  const location = useLocation();
 
   const classes = useStyles();
   const handleDelete = async () => {
@@ -50,6 +59,47 @@ const Product = ({ product, refreshProducts }) => {
         })
       );
       setDeleteButtonsShown(false);
+      refreshProducts();
+    } catch (error) {
+      console.log(error);
+      if (error.status === 404) {
+        dispatch(
+          setNotification({
+            alertMessage: "Product not found.",
+            alertType: "error",
+            open: true,
+          })
+        );
+        return;
+      }
+      error.data
+        ? dispatch(
+            setNotification({
+              alertMessage: error.data.message,
+              alertType: "error",
+              open: true,
+            })
+          )
+        : dispatch(
+            setNotification({
+              alertMessage:
+                "There was an issue contacting the server. Please try again later.",
+              alertType: "error",
+              open: true,
+            })
+          );
+    }
+  };
+  const handleAdd = async () => {
+    try {
+      const addResponse = await addProduct(product).unwrap();
+      dispatch(
+        setNotification({
+          alertMessage: `Successfully added product with id ${product.id} to cart!`,
+          alertType: "success",
+          open: true,
+        })
+      );
       refreshProducts();
     } catch (error) {
       console.log(error);
@@ -96,7 +146,7 @@ const Product = ({ product, refreshProducts }) => {
         <CardMedia
           component="img"
           alt={product.name}
-          height="140"
+          height="230"
           image={product.photoUrl}
           title={product.name}
         />
@@ -120,11 +170,11 @@ const Product = ({ product, refreshProducts }) => {
       <CardActions className={classes.actions}>
         {state.auth.roles.includes("Admin") && !deleteButtonsShown && (
           <>
-            <a href={`/products/${product.id}`}>
+            <Link to={`${location.pathname}/edit/${product.id}`}>
               <Button size="small" color="primary">
                 Edit
               </Button>
-            </a>
+            </Link>
             <Button
               onClick={(e) => {
                 e.stopPropagation();
@@ -161,6 +211,18 @@ const Product = ({ product, refreshProducts }) => {
             <Typography variant="caption" color="textSecondary">
               Are you sure?
             </Typography>
+          </>
+        )}
+        {state.auth.roles.includes("User") && !product.cartId && (
+          <>
+            <Button
+              onClick={() => handleAdd()}
+              size="small"
+              color="primary"
+              disabled={isLoading}
+            >
+              Add to cart
+            </Button>
           </>
         )}
       </CardActions>

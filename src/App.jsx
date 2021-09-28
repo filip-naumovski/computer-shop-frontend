@@ -16,21 +16,13 @@ import Products from "./pages/Products/Products";
 import { setCredentials } from "./redux/auth/authSlice";
 import { setNotification } from "./redux/notification/notificationSlice";
 import Register from "./pages/Register/Register";
+import AddProduct from "./pages/AddProduct/AddProduct";
 import history from "./utils/history";
 import EditProduct from "pages/EditProduct/EditProduct";
 import ProtectedRoute from "./components/ProtectedRoute";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import Cart from "pages/Cart/Cart";
+import Orders from "pages/Orders/Orders";
 
 const App = () => {
   const state = useSelector((state) => state);
@@ -42,7 +34,13 @@ const App = () => {
   };
 
   const handleClose = () => {
-    dispatch(setNotification({ open: false }));
+    dispatch(
+      setNotification({
+        alertMessage: state.notification.alertType,
+        alertType: state.notification.alertType,
+        open: false,
+      })
+    );
   };
 
   useEffect(() => {
@@ -87,12 +85,14 @@ const App = () => {
     window.localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-  const classes = useStyles();
   const theme = createMuiTheme({
     palette: {
       type: darkMode ? "dark" : "light",
       primary: {
         main: darkMode ? "#4eafc0" : "#110a9c",
+        hover: darkMode ? "#4eafff" : "#110afc",
+        active: darkMode ? "#12345f" : "#11a6fa",
+        text: darkMode ? "#000000" : "#ffffff",
       },
       secondary: {
         main: darkMode ? "#1f1f1f" : "#c4c4c4",
@@ -106,18 +106,24 @@ const App = () => {
       <Router history={history}>
         <Nav
           darkMode={darkMode}
-          classes={classes}
           setDarkMode={() => darkModeHandler()}
           state={state}
           logout={() => logoutHandler()}
         />
-        <div style={{ marginTop: "50px", marginBottom: "50px" }}>
+        <div style={{ marginTop: "100px" }}>
           <RouterSwitch>
             <ProtectedRoute exact path="/products" component={Products} />
-            <ProtectedRoute
+            <ProtectedRoute exact path="/cart" component={Cart} />
+            <ProtectedRoute exact path="/orders" component={Orders} />
+            <AdminProtectedRoute
               exact
-              path="/products/:id"
+              path="/products/edit/:id"
               component={EditProduct}
+            />
+            <AdminProtectedRoute
+              exact
+              path="/products/add"
+              component={AddProduct}
             />
             <Route exact path="/login">
               <Login />

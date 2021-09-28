@@ -1,0 +1,15 @@
+.orders-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.order-container {
+  margin: 40px;
+}
+
+.ordered-by {
+  font-size: 2.2em;
+  color: rgb(138, 138, 138);
+}
