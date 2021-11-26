@@ -43,16 +43,19 @@ const ProductCategories = ({ theme, data, isLoading, error, category }) => {
       ) : error ? (
         <div>Oops! Something went wrong.</div>
       ) : (
-        [...new Set(data.map((product) => product.type))].map((productType) => (
-          <div
-            onClick={() => category.setCategory(productType)}
-            className={`${classes.category} ${
-              category.selectedCategory === productType && classes.selected
-            }`}
-          >
-            {productType}
-          </div>
-        ))
+        [...new Set(data.map((product) => product.type))].map(
+          (productType, key) => (
+            <div
+              key={key}
+              onClick={() => category.setCategory(productType)}
+              className={`${classes.category} ${
+                category.selectedCategory === productType && classes.selected
+              }`}
+            >
+              {productType}
+            </div>
+          )
+        )
       )}
     </Box>
   );

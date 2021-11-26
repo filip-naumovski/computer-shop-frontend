@@ -43,7 +43,7 @@ const Product = ({ product, refreshProducts }) => {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
   const [deleteProduct, { isLoading }] = useDeleteProductMutation();
-  const [addProduct, { AddIsLoading }] = useAddProductToCartMutation();
+  const [addProduct, { addIsLoading }] = useAddProductToCartMutation();
 
   const location = useLocation();
 

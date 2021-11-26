@@ -25,8 +25,10 @@ import Cart from "pages/Cart/Cart";
 import Orders from "pages/Orders/Orders";
 
 const App = () => {
-  const state = useSelector((state) => state);
+  const notificationState = useSelector((state) => state.notification);
   const dispatch = useDispatch();
+
+  console.log("app rerender");
 
   const [darkMode, setDarkMode] = useState(true);
   const darkModeHandler = () => {
@@ -36,8 +38,8 @@ const App = () => {
   const handleClose = () => {
     dispatch(
       setNotification({
-        alertMessage: state.notification.alertType,
-        alertType: state.notification.alertType,
+        alertMessage: notificationState.alertType,
+        alertType: notificationState.alertType,
         open: false,
       })
     );
@@ -107,7 +109,6 @@ const App = () => {
         <Nav
           darkMode={darkMode}
           setDarkMode={() => darkModeHandler()}
-          state={state}
           logout={() => logoutHandler()}
         />
         <div style={{ marginTop: "100px" }}>
@@ -125,26 +126,22 @@ const App = () => {
               path="/products/add"
               component={AddProduct}
             />
-            <Route exact path="/login">
-              <Login />
-            </Route>
-            <Route exact path="/register">
-              <Register />
-            </Route>
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} />
           </RouterSwitch>
         </div>
       </Router>
       <Snackbar
-        open={state.notification.open}
+        open={notificationState.open}
         autoHideDuration={6000}
         onClose={() => handleClose()}
       >
         <Alert
-          severity={state.notification.alertType}
+          severity={notificationState.alertType}
           variant="filled"
           onClose={() => handleClose()}
         >
-          {state.notification.alertMessage}
+          {notificationState.alertMessage}
         </Alert>
       </Snackbar>
     </ThemeProvider>

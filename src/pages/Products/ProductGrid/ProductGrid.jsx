@@ -1,9 +1,8 @@
+import { Box } from "@material-ui/core";
+import React from "react";
+import { useSelector } from "react-redux";
 import "../Products.css";
 import Product from "./Product/Product";
-import { Box } from "@material-ui/core";
-
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 
 const ProductGrid = ({
   data,
@@ -34,18 +33,25 @@ const ProductGrid = ({
           ))
       ) : (
         data
-          .filter(
-            (product) =>
-              product.name
-                .toLowerCase()
-                .includes(state.search.input.toLowerCase()) ||
-              product.brand
-                .toLowerCase()
-                .includes(state.search.input.toLowerCase()) ||
-              product.type
-                .toLowerCase()
-                .includes(state.search.input.toLowerCase())
-          )
+          .filter((product) => {
+            const input = state.search.input
+              .split("")
+              .filter((c) => c !== " ")
+              .join("")
+              .toLowerCase();
+            const fullName = `${product.type}${product.brand}${product.name}`
+              .split("")
+              .filter((c) => c !== " ")
+              .join("")
+              .toLowerCase();
+            return (
+              product.name.toLowerCase().includes(input) ||
+              product.brand.toLowerCase().includes(input) ||
+              product.type.toLowerCase().includes(input) ||
+              product.description.toLowerCase().includes(input) ||
+              fullName.includes(input)
+            );
+          })
           .map((product, key) => (
             <Product product={product} key={key} refreshProducts={refetch} />
           ))

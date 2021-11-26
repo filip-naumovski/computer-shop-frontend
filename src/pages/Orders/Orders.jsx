@@ -131,7 +131,7 @@ const Orders = () => {
       ) : (
         orders.map((order, key) => (
           <div key={key} className="order-container">
-            <span class="ordered-by">
+            <span className="ordered-by">
               Ordered by: {order.applicationUser.email}
             </span>
             <Box

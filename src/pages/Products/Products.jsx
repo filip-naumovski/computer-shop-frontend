@@ -26,7 +26,7 @@ const Products = () => {
 
   useEffect(() => {
     refetch();
-  }, [history]);
+  }, [history, refetch]);
 
   const setCategory = (category) => {
     setSelectedCategory((prevState) => {

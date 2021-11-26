@@ -1,34 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router";
-import { Link } from "react-router-dom";
-
-import { styled } from "@material-ui/styles";
-
 import {
+  Button,
   Switch,
-  AppBar,
   Toolbar,
   Typography,
-  Button,
-  TextField,
   useTheme,
 } from "@material-ui/core";
-import { useDispatch } from "react-redux";
-import { setSearch } from "redux/search/searchSlice";
+import { styled } from "@material-ui/styles";
+import SearchField from "components/SearchField";
+import React from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Nav = ({ darkMode, setDarkMode, logout }) => {
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const state = useSelector((state) => state);
+  const authState = useSelector((state) => state.auth);
 
-  const { isLoggedIn } = state.auth;
+  const { isLoggedIn } = authState;
   const theme = useTheme();
-
-  const SearchField = styled(TextField)({
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
-    width: "30vw",
-  });
 
   const StyledToolbar = styled(Toolbar)({
     zIndex: 1,
@@ -42,10 +29,6 @@ const Nav = ({ darkMode, setDarkMode, logout }) => {
     boxShadow: "1px 5px 10px 0px rgba(0,0,0,0.56)",
   });
 
-  // const handleSearch = (e) => {
-  //   );
-  // };
-
   return (
     <StyledToolbar className="nav">
       <div style={{ display: "flex", flexDirection: "row" }}>
@@ -55,20 +38,7 @@ const Nav = ({ darkMode, setDarkMode, logout }) => {
         </Typography>
       </div>
       <div className="middle">
-        <SearchField
-          autoFocus="autoFocus" // TODO SPAGHETTI
-          onChange={(e) => {
-            dispatch(setSearch({ input: e.target.value }));
-          }}
-          value={state.search.input}
-          placeholder="Search for products..."
-          variant="filled"
-          size="small"
-          hiddenLabel
-          InputProps={{
-            style: { color: "#0f0f0f" },
-          }}
-        />
+        <SearchField />
       </div>
       <div className="left">
         {!isLoggedIn ? (

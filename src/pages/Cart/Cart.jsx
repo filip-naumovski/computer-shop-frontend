@@ -1,18 +1,16 @@
-import "../Products/Products.css";
-import "./Cart.css";
-import Product from "pages/Products/ProductGrid/Product/Product";
 import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-
-import React, { useState, useEffect } from "react";
+import { makeStyles, useTheme } from "@material-ui/styles";
+import Product from "pages/Products/ProductGrid/Product/Product";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import { setNotification } from "redux/notification/notificationSlice";
 import {
   useGetUserCartQuery,
   useSubmitOrderMutation,
 } from "services/computerShopService";
-import { useTheme } from "@material-ui/styles";
-import { useHistory } from "react-router";
-import { setNotification } from "redux/notification/notificationSlice";
-import { useDispatch } from "react-redux";
+import "../Products/Products.css";
+import "./Cart.css";
 
 const Cart = () => {
   const { data: cart, isLoading, error, refetch } = useGetUserCartQuery();
